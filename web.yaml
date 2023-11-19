@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'web instances in Auto scaling public subnet.'
+
+Parameters:
+  KeyName:
+    Description: 'The EC2 Key Pair to allow SSH access to the instance'
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    Default: mykey
+
+  ImageId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+    
+Resources:
+  MyLaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      KeyName: !Ref KeyName
+      ImageId: !Ref ImageId
+      InstanceType: t3.micro
+      SecurityGroups:
+        - sg-0805c5edf871ff1a0
+          
+  MyAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier:
+        - subnet-0d169b905a99ce808
+        - subnet-05e221fec74bfef8a
+      LaunchConfigurationName: !Ref MyLaunchConfiguration
+      MinSize: 1
+      MaxSize: 5
+      DesiredCapacity: 2
+      Tags:
+        - Key: Name
+          Value: Peter-Web-public
+          PropagateAtLaunch: true

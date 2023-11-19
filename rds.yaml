@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  MasterUsername:
+    Type: String
+    Default: 'admin'
+  MasterUserPassword:
+    Type: String
+    Default: 'Admin1234'
+  MySecurityGroup:
+    Type: String
+    Default: 'sg-0805c5edf871ff1a0'    
+
+Resources:
+  MyDB:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      DBInstanceIdentifier: MySQL-Peter-L00186456
+      AllocatedStorage: 20
+      DBInstanceClass: db.t3.small
+      Engine: "MYSQL"
+      MasterUsername: !Ref MasterUsername
+      MasterUserPassword: !Ref MasterUserPassword
+      BackupRetentionPeriod: 0
+      MultiAZ: true
+      EngineVersion: 8.0.33
+      AutoMinorVersionUpgrade: true
+      PubliclyAccessible: false
+      StorageType: gp2
+      Port: 3306
+      StorageEncrypted: true
+      CopyTagsToSnapshot: true
+      EnableIAMDatabaseAuthentication: false
+      DeletionProtection: false
+      DBSubnetGroupName: !Ref RDSDBSubnetGroup
+      VPCSecurityGroups: 
+        - !Ref MySecurityGroup
+      MaxAllocatedStorage: 50
+      Tags: 
+        - Key: Name
+          Value: Peter-MySQL
+        - Key: createdBy
+          Value: L00186456
+
+  RDSDBSubnetGroup:
+    Type: 'AWS::RDS::DBSubnetGroup'
+    Properties:
+      DBSubnetGroupName: MyDBSubnetGroup
+      DBSubnetGroupDescription: 'My DB Subnet Group'
+      SubnetIds:
+        - subnet-07557ed9714f1e539 
+        - subnet-0cac9aeffd504141e
+
